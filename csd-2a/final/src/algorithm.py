@@ -1,22 +1,33 @@
-from scipy import *
-
 beats = 5
 measure = [['kick', 'hat'], ['hat'], ['snare', 'hat'], ['hat'], ['hat']]
 options = ['kick', 'snare', 'hat']
 weighed = {}
 significance = []
 
-for beat in measure:
-    significance.append(len(beat) / beats)
 
-    for option in options:
-        if option in weighed:
-            weighed[option] += beat.count(option)
-        else:
-            weighed[option] = beat.count(option)
+def train():
+    global weighed, significance
 
-for el in weighed:
-    weighed[el] = 1 - (weighed[el] / beats)
+    for beat in measure:
+        significance.append(len(beat) / beats)
 
-print(weighed)
-print(significance)
+        for option in options:
+            if option in weighed:
+                weighed[option] += beat.count(option)
+            else:
+                weighed[option] = beat.count(option)
+
+    for el in weighed:
+        weighed[el] = 1 - (weighed[el] / beats)
+
+    print(weighed)
+    print(significance)
+
+
+def interp():
+    print('now interpolating')
+
+
+def gen(signature, division, length, evolve=False):
+    # Generate a rhythm from the trained model
+    print(signature, division, length, evolve)
