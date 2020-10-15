@@ -63,8 +63,9 @@ def train(signature, series="user"):
                         timekeeper += round(msg.time * scale)
                         if msg.type == 'note_on':
                             print(msg, "time-delta =", round(msg.time * scale), 'timekeeper =', timekeeper, 'rounded =', round(timekeeper / quantize) * quantize)
-                        # Quantize the timekeeper to avoid confusion from possible swing in the source files
-                        timekeeper = round(timekeeper / quantize) * quantize
+                        # Quantize the timekeeper on whole beats to iron out possible humanization in the source files
+                        if timekeeper % 48 > 43 or timekeeper % 48 < 5:
+                            timekeeper = round(timekeeper / quantize) * quantize
 
                         # Filter out note_off messages
                         if msg.type == 'note_on' and msg.velocity > 0:
