@@ -9,8 +9,10 @@ from termcolor import colored
 master_timeline = {}
 quantize = 8
 ppq = 48
-debug_mode = False
 signature = None
+
+# Debug Mode toggles various logging functions
+debug_mode = False
 
 
 # Converts the global master timeline from amounts to percentages
@@ -27,7 +29,7 @@ def convert_to_perc(total):
 def extract_sum():
     summed = {}
     weight = {}
-    length = 0
+    length = 1
     hold = 0
     time_factor = 4 / signature[1]
 
@@ -85,7 +87,7 @@ def train(sig, series="user"):
 
     # Define the base variables
     file_count = 0
-    directory = str(signature[0])+"-"+str(signature[1])
+    directory = series+'/'+str(signature[0])+"-"+str(signature[1])
 
     # For each file in the training directory...
     for filename in os.listdir('../train/'+directory):
@@ -106,8 +108,8 @@ def train(sig, series="user"):
 
             # Iterate over all MIDI tracks
             for i, track in enumerate(mid.tracks):
-                # Skip the first track as it only contains metadata
-                if i > 0:
+                # Only analyze the first track containing note material
+                if i < 2:
                     # For each note in the track
                     for msg in track:
                         # Increment the timekeeper by the MIDI message's time delta
@@ -123,11 +125,12 @@ def train(sig, series="user"):
 
                         # Filter out note_off messages
                         if msg.type == 'note_on' and msg.velocity > 0:
-                            # Append to the local timeline
-                            if timekeeper in timeline:
-                                timeline[timekeeper].append(msg.note)
-                            else:
-                                timeline[timekeeper] = [msg.note]
+                            # Append to the local timeline (only when Debug Mode is enabled)
+                            if debug_mode:
+                                if timekeeper in timeline:
+                                    timeline[timekeeper].append(msg.note)
+                                else:
+                                    timeline[timekeeper] = [msg.note]
 
                             # Count the global occurrences of the note on the master timeline
                             if timekeeper in master_timeline:
@@ -156,8 +159,8 @@ def train(sig, series="user"):
     single = extract_sum()
 
     # Define a model file path...
-    path = os.path.abspath("../model/"+series+"/"+directory+"/overview.pickle")
-    sum_path = os.path.abspath("../model/"+series+"/"+directory+"/sum.pickle")
+    path = os.path.abspath("../model/"+directory+"/overview.pickle")
+    sum_path = os.path.abspath("../model/"+directory+"/sum.pickle")
     # ...and write the model contents to the file.
     write_data(master_timeline, path)
     write_data(single['weighed'], sum_path)
