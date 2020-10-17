@@ -8,6 +8,9 @@ from termcolor import colored
 # Define the master timeline, on which a count of all events per timestamp is stored
 master_timeline = {}
 quantize = 8
+ppq = 48
+debug_mode = False
+signature = None
 
 
 # Converts the global master timeline from amounts to percentages
@@ -15,6 +18,51 @@ def convert_to_perc(total):
     for time in master_timeline:
         for note in master_timeline[time]:
             master_timeline[time][note] = master_timeline[time][note] / total
+
+    if debug_mode:
+        print('Weighed results:', master_timeline)
+
+
+# Merges the master timeline into a single weighed measure
+def extract_sum():
+    summed = {}
+    weight = {}
+    length = 0
+    hold = 0
+    time_factor = 4 / signature[1]
+
+    for time in master_timeline:
+        # Translate the time stamp to a measure position and quantise it
+        new_time = round((time % (ppq * signature[0] * time_factor)) / 2) * 2
+        # Increase the measure counter
+        if new_time < hold:
+            length += 1
+        # Make sure that there is a dict to be filled
+        if new_time not in summed:
+            summed[new_time] = {}
+        # Fill the dict with counts of notes at times
+        for note in master_timeline[time]:
+            if note in summed[new_time]:
+                summed[new_time][note] += master_timeline[time][note]
+            else:
+                summed[new_time][note] = master_timeline[time][note]
+
+        # Store the old time to calculate zero-crossings
+        hold = new_time
+
+    # Calculate the per-measure averages
+    for time in summed:
+        weight[time] = {}
+        for note in summed[time]:
+            weight[time][note] = round((summed[time][note] / length) * 100) / 100
+
+    # Debug write-out
+    if debug_mode:
+        print("Total single measure:", summed)
+        print("Average single measure:", weight)
+
+    # Return the generated lists
+    return {'summed': summed, 'weighed': weight}
 
 
 # Writes pickled data to a file on disk
@@ -31,7 +79,10 @@ def write_data(data, path):
 
 
 # Trains the model
-def train(signature, series="user"):
+def train(sig, series="user"):
+    global signature
+    signature = sig
+
     # Define the base variables
     file_count = 0
     directory = str(signature[0])+"-"+str(signature[1])
@@ -47,7 +98,7 @@ def train(signature, series="user"):
             # Read the MIDI file
             mid = mido.MidiFile('../train/'+directory+'/'+filename)
             # Calculate a scale factor to scale everything back to 48 PPQ (we don't need a higher resolution)
-            scale = 48 / mid.ticks_per_beat
+            scale = ppq / mid.ticks_per_beat
 
             # Define the per-file timeline and timekeeper
             timeline = {}
@@ -61,10 +112,13 @@ def train(signature, series="user"):
                     for msg in track:
                         # Increment the timekeeper by the MIDI message's time delta
                         timekeeper += round(msg.time * scale)
-                        if msg.type == 'note_on':
+
+                        # Debug write-out (remove False to enable)
+                        if msg.type == 'note_on' and debug_mode:
                             print(msg, "time-delta =", round(msg.time * scale), 'timekeeper =', timekeeper, 'rounded =', round(timekeeper / quantize) * quantize)
+
                         # Quantize the timekeeper on whole beats to iron out possible humanization in the source files
-                        if timekeeper % 48 > 43 or timekeeper % 48 < 5:
+                        if timekeeper % ppq > ppq - 5 or timekeeper % ppq < 5:
                             timekeeper = round(timekeeper / quantize) * quantize
 
                         # Filter out note_off messages
@@ -85,7 +139,8 @@ def train(signature, series="user"):
                                 master_timeline[timekeeper] = {msg.note: 1}
 
             # Print the result
-            print(timeline)
+            if debug_mode:
+                print(timeline)
             print(colored('√', 'green'), "Done. Moving to next file...\n")
         else:
             # The file was not a MIDI file, so we move on.
@@ -93,32 +148,37 @@ def train(signature, series="user"):
 
     # Inform the user that training is complete.
     print(colored('√', 'green'), "Training complete.")
-    print("Results:", master_timeline)
+    if debug_mode:
+        print("Results:", master_timeline)
 
     # Convert the count results to percentages.
     convert_to_perc(file_count)
+    single = extract_sum()
 
     # Define a model file path...
     path = os.path.abspath("../model/"+series+"/"+directory+"/overview.pickle")
+    sum_path = os.path.abspath("../model/"+series+"/"+directory+"/sum.pickle")
     # ...and write the model contents to the file.
     write_data(master_timeline, path)
+    write_data(single['weighed'], sum_path)
 
 
+# Export a trained model to a MIDI file, for testing purposes (undocumented)
 def model_to_midi(model):
-    data = pickle.load(open('../model/'+model+'/overview.pickle', 'rb'))
+    sig = signature
+    data = pickle.load(open('../model/'+model+'.pickle', 'rb'))
     sort = collections.OrderedDict(sorted(data.items()))
-    print(sort)
 
-    mid = mido.MidiFile(ticks_per_beat=48)
+    mid = mido.MidiFile(ticks_per_beat=ppq)
     track = mido.MidiTrack()
     mid.tracks.append(track)
-    track.append(mido.MetaMessage('time_signature', numerator=3, denominator=4))
+    track.append(mido.MetaMessage('time_signature', numerator=sig[0], denominator=sig[1]))
+
     prev_time = 0
 
     for time in sort:
         for note in sort[time]:
             t = time - prev_time
-            print(t)
 
             track.append(mido.Message('note_on', note=note, velocity=64, time=t))
             track.append(mido.Message('note_off', note=note, velocity=0, time=0))
@@ -128,5 +188,5 @@ def model_to_midi(model):
     mid.save("../dumps/"+model.replace('/', '_')+".mid")
 
 
-train((3, 4), "example")
-model_to_midi('example/3-4')
+# train((6, 8), "example")
+# model_to_midi('example/'+str(signature[0])+'-'+str(signature[1])+'/overview')
