@@ -187,7 +187,7 @@ def do_generate():
 def do_play():
     try:
         playback.init(generated)
-    except AssertionError:
+    except ValueError:
         print(colored('\u00D7', 'red'), 'Error: no rhythm was found. Please run', colored('generate', 'yellow'),
               'and try again.')
 
