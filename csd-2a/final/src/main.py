@@ -1,6 +1,9 @@
 import ui
 from termcolor import colored
 
+import os
+os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
+
 # Example Usage:
 # Train a model on a specified dataset
 # => train.train((6, 8), 'example')
