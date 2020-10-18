@@ -2,9 +2,6 @@ import multiprocessing
 import time
 import mido
 from termcolor import colored
-import simpleaudio
-
-kick = simpleaudio.WaveObject.from_wave_file('../../../assets/kick.wav')
 
 playing = False
 loop = False
@@ -30,13 +27,15 @@ def set_bpm(value):
 
 
 # Function to be executed in the playback process
-def play(e):
-    global playing, timekeeper, kick
+def play(q):
+    global playing, timekeeper
 
     mido.set_backend('mido.backends.pygame')
 
     prev_time = time.time()
     gm_out = mido.open_output(gm_output)
+
+    playing = True
 
     while playing:
         cur_time = time.time()
@@ -51,42 +50,67 @@ def play(e):
             if timekeeper > max(timeline):
                 if not loop:
                     playing = False
+                    break
                 timekeeper = 0
+                continue
 
-            if e.is_set():
-                playing = False
-                timekeeper = 0
+            if not q.empty():
+                val = q.get(False)
+                if val == 'stop':
+                    playing = False
+                    timekeeper = 0
+                    break
+                elif val == 'pause':
+                    if q.get() == 'play':
+                        continue
 
         time.sleep(0.001)
 
     gm_out.close()
+    return
 
 
 # Initialization function for playback mode
 def init(rhythm):
     global proc, play_state, playing, gm_output, timeline, loop
-    stop_sig = multiprocessing.Event()
+    q = multiprocessing.Queue()
 
-    proc = multiprocessing.Process(target=play, args=(stop_sig, ))
-    play_state = True
+    if bool(rhythm):
+        timeline = rhythm
+        play_state = True
+        paused = False
 
-    while play_state:
-        if bool(rhythm) or bool(timeline):
-            if bool(rhythm):
-                timeline = rhythm
+        while play_state:
             if playing:
-                cmd = input('['+colored('playing', 'cyan')+'] Playback command: ')
+                if paused:
+                    cmd = input('['+colored('paused', 'yellow')+'] Playback command: ')
+                else:
+                    cmd = input('['+colored('playing', 'cyan')+'] Playback command: ')
             else:
                 cmd = input('Playback command: ')
 
             if cmd == 'pause':
-                stop_sig.set()
+                q.put('pause')
+                paused = True
             elif cmd == 'play':
-                playing = True
-                proc.start()
+                if paused:
+                    q.put('play')
+                    paused = False
+                else:
+                    if proc and proc.is_alive():
+                        proc.terminate()
+                        proc.join()
+                        proc.close()
+                    proc = multiprocessing.Process(target=play, args=(q, ))
+                    proc.start()
             elif cmd == 'stop':
-                stop_sig.set()
+                q.put('stop')
                 play_state = False
+
+                proc.terminate()
+                proc.join()
+                proc.close()
+                proc = None
             elif cmd == 'loop':
                 loop = not loop
                 print('Loop is now', colored(loop, 'cyan'))
@@ -104,5 +128,5 @@ def init(rhythm):
             else:
                 # Handle unknown commands
                 print('Unknown command. Type', colored('help', 'yellow'), 'for a list of included commands.')
-        else:
-            raise AssertionError
+    else:
+        raise ValueError
