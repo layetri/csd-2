@@ -39,3 +39,4 @@ def gen(signature, division, length, series="example", evolve=False):
                         result[i].append(note)
 
     print(result)
+    return result

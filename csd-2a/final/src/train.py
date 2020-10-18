@@ -144,13 +144,13 @@ def train(sig, series="user"):
             # Print the result
             if debug_mode:
                 print(timeline)
-            print(colored('√', 'green'), "Done. Moving to next file...\n")
+            print(colored('\u221A', 'green'), "Done. Moving to next file...\n")
         else:
             # The file was not a MIDI file, so we move on.
-            print(colored('×', 'red'), colored(filename, 'yellow'), "is not a MIDI file. Skipping...\n")
+            print(colored('\u00D7', 'red'), colored(filename, 'yellow'), "is not a MIDI file. Skipping...\n")
 
     # Inform the user that training is complete.
-    print(colored('√', 'green'), "Training complete.")
+    print(colored('\u221A', 'green'), "Training complete.")
     if debug_mode:
         print("Results:", master_timeline)
 
