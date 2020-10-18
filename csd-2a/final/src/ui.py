@@ -20,7 +20,7 @@ def time_sig_input():
         sig_set = input(' => ')
         if not sig_set:
             sig_set = sig
-            print(colored('√', 'green'), 'Using default time signature')
+            print(colored('\u221A', 'green'), 'Using default time signature')
         else:
             try:
                 # Parse the time signature to a tuple
@@ -32,10 +32,10 @@ def time_sig_input():
                     raise AssertionError
             except ValueError:
                 sig_set = None
-                print(colored('×', 'red'), "Error: could not parse input to tuple. Try again.")
+                print(colored('\u00D7', 'red'), "Error: could not parse input to tuple. Try again.")
             except AssertionError:
                 sig_set = None
-                print(colored('×', 'red'), "Error: not a valid denomination. Try again.")
+                print(colored('\u00D7', 'red'), "Error: not a valid denomination. Try again.")
 
     if sig_set and sig_set is not sig:
         sig = sig_set
@@ -58,7 +58,7 @@ def series_input(context):
         # Check if the series directory exists for the desired action
         if not os.path.isdir('../' + context + '/' + series_set + '/' + str(sig[0]) + '-' + str(sig[1])):
             series_set = None
-            print(colored('×', 'red'), "Error: model not found. Try again.")
+            print(colored('\u00D7', 'red'), "Error: model not found. Try again.")
 
     if series_set is not series:
         series = series_set
@@ -87,10 +87,10 @@ def division_input():
                     raise AssertionError
             except ValueError:
                 division_set = None
-                print(colored('×', 'red'), "Error: could not parse input to number. Try again.")
+                print(colored('\u00D7', 'red'), "Error: could not parse input to number. Try again.")
             except AssertionError:
                 division_set = None
-                print(colored('×', 'red'), "Error: not a valid subdivision. Try again.")
+                print(colored('\u00D7', 'red'), "Error: not a valid subdivision. Try again.")
 
     if division_set is not division:
         division = division_set
@@ -113,7 +113,7 @@ def length_input():
                 length_set = int(length_set)
             except ValueError:
                 length_set = None
-                print(colored('×', 'red'), "Error: could not parse input to number. Try again.")
+                print(colored('\u00D7', 'red'), "Error: could not parse input to number. Try again.")
 
     if length_set is not length:
         length = length_set
@@ -140,7 +140,7 @@ def evolve_input():
             evolve_set = False
         else:
             evolve_set = None
-            print(colored('×', 'red'), "Error: input is neither \"yes\" or \"no\". Try again.")
+            print(colored('\u00D7', 'red'), "Error: input is neither \"yes\" or \"no\". Try again.")
 
     if evolve_set is not evolve:
         evolve = evolve_set
@@ -185,7 +185,15 @@ def do_generate():
 
 
 def do_play():
-    playback.play()
+    try:
+        playback.init(generated)
+    except AssertionError:
+        print(colored('\u00D7', 'red'), 'Error: no rhythm was found. Please run', colored('generate', 'yellow'),
+              'and try again.')
+
+
+def do_export():
+    print('Wanna export?')
 
 
 def handle_input(command):
@@ -198,6 +206,19 @@ def handle_input(command):
     elif command == 'generate':
         # Guide the user to generate a new rhythm
         do_generate()
+    elif command == 'export':
+        do_export()
+    elif command == 'exit':
+        print('Thank you for using', colored('NeuroBeat', 'cyan') + '. Bye bye!')
+        exit()
+    elif command == 'about':
+        packages = ['mido', 'termcolor', 'pygame']
+
+        print(colored('NeuroBeat', 'cyan'), 'was built by Dani\u00EBl Kamp. Copyright \u00A9 2020.')
+        print('NeuroBeat depends on the following packages:')
+
+        for package in packages:
+            print('-', package)
     elif command == "help":
         # Print the help page
         print('The following commands are available for you to use:')
@@ -205,6 +226,8 @@ def handle_input(command):
         print(colored('generate', 'cyan'), '     Generate a rhythm using a specified model.')
         print(colored('play', 'cyan'), '         Play back the generated rhythm.')
         print(colored('export', 'cyan'), '       Write the generated rhythm to a MIDI file.')
+        print(colored('about', 'cyan'), '        Display info about the program.')
+        print(colored('exit', 'cyan'), '         Quit the program.')
     else:
         # Handle unknown commands
         print('Unknown command. Type', colored('help', 'yellow'), 'for a list of included commands.')
