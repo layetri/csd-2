@@ -3,6 +3,7 @@ import os
 import collections
 import pickle
 import errno
+import math
 from termcolor import colored
 
 # Define the master timeline, on which a count of all events per timestamp is stored
@@ -12,7 +13,7 @@ ppq = 48
 signature = None
 
 # Debug Mode toggles various logging functions
-debug_mode = False
+debug_mode = True
 
 
 # Converts the global master timeline from amounts to percentages
@@ -29,16 +30,12 @@ def convert_to_perc(total):
 def extract_sum():
     summed = {}
     weight = {}
-    length = 1
-    hold = 0
-    time_factor = 4 / signature[1]
+    ticks_per_measure = ppq * signature[0] / (4 / signature[1])
+    length = math.ceil(max(master_timeline) / ticks_per_measure)
 
     for time in master_timeline:
         # Translate the time stamp to a measure position and quantise it
-        new_time = round((time % (ppq * signature[0] * time_factor)) / 2) * 2
-        # Increase the measure counter
-        if new_time < hold:
-            length += 1
+        new_time = round((time % ticks_per_measure) / 2) * 2
         # Make sure that there is a dict to be filled
         if new_time not in summed:
             summed[new_time] = {}
@@ -49,14 +46,11 @@ def extract_sum():
             else:
                 summed[new_time][note] = master_timeline[time][note]
 
-        # Store the old time to calculate zero-crossings
-        hold = new_time
-
     # Calculate the per-measure averages
     for time in summed:
         weight[time] = {}
         for note in summed[time]:
-            weight[time][note] = round((summed[time][note] / length) * 100) / 100
+            weight[time][note] = round((summed[time][note] / length) * 1000) / 1000
 
     # Debug write-out
     if debug_mode:
