@@ -1,9 +1,9 @@
 import mido
 import os
-import collections
 import pickle
 import errno
 import math
+import render
 from termcolor import colored
 
 # Define the master timeline, on which a count of all events per timestamp is stored
@@ -13,7 +13,7 @@ ppq = 48
 signature = None
 
 # Debug Mode toggles various logging functions
-debug_mode = True
+debug_mode = False
 
 
 # Converts the global master timeline from amounts to percentages
@@ -159,31 +159,5 @@ def train(sig, series="user"):
     write_data(master_timeline, path)
     write_data(single['weighed'], sum_path)
 
-
-# Export a trained model to a MIDI file, for testing purposes (undocumented)
-def model_to_midi(model):
-    sig = signature
-    data = pickle.load(open('../model/'+model+'.pickle', 'rb'))
-    sort = collections.OrderedDict(sorted(data.items()))
-
-    mid = mido.MidiFile(ticks_per_beat=ppq)
-    track = mido.MidiTrack()
-    mid.tracks.append(track)
-    track.append(mido.MetaMessage('time_signature', numerator=sig[0], denominator=sig[1]))
-
-    prev_time = 0
-
-    for time in sort:
-        for note in sort[time]:
-            t = time - prev_time
-
-            track.append(mido.Message('note_on', note=note, velocity=64, time=t))
-            track.append(mido.Message('note_off', note=note, velocity=0, time=0))
-
-            prev_time = time
-
-    mid.save("../dumps/"+model.replace('/', '_')+".mid")
-
-
-# train((6, 8), "example")
-# model_to_midi('example/'+str(signature[0])+'-'+str(signature[1])+'/overview')
+    if debug_mode:
+        render.model_to_midi('example/' + str(signature[0]) + '-' + str(signature[1]) + '/overview', signature, ppq)
