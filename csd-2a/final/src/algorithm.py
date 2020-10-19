@@ -2,7 +2,7 @@ import pickle
 import random
 
 
-def gen(signature, division, length, series="example", evolve=False):
+def gen(signature, division, length, series="example", evolve=False, swing=False):
     # Generate a rhythm from the trained model
     model = pickle.load(open('../model/'+series+'/'+str(signature[0])+'-'+str(signature[1])+'/sum.pickle', 'rb'))
 
@@ -12,7 +12,6 @@ def gen(signature, division, length, series="example", evolve=False):
         average = {}
 
     ppq = 48
-    increment = ppq / (division / (32 / signature[1]))
     slices = division * signature[0] * length
     single_measure = division * signature[0]
 
@@ -23,8 +22,14 @@ def gen(signature, division, length, series="example", evolve=False):
         pos = i % single_measure
         if pos in model:
             print(i, ':', model[pos])
+
+            if swing:
+                slc = i + (round(random.random() * 4) - 2)
+            else:
+                slc = i
+
             if i not in result:
-                result[i] = []
+                result[slc] = []
 
             if evolve:
                 if i in layer:
@@ -32,11 +37,11 @@ def gen(signature, division, length, series="example", evolve=False):
                     for note in model[pos]:
                         if note in layer[i]:
                             if random.random() < (model[pos][note] + layer[i][note]) / 2:
-                                result[i].append(note)
+                                result[slc].append(note)
             else:
                 for note in model[pos]:
                     if random.random() < model[pos][note]:
-                        result[i].append(note)
+                        result[slc].append(note)
 
     print(result)
     return result
