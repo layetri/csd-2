@@ -1,4 +1,4 @@
-import playback, ui, algorithm, train
+import playback, ui, algorithm, train, render
 from termcolor import colored
 import math
 import os
@@ -153,6 +153,34 @@ def evolve_input():
     return evolve
 
 
+# Ask the user to pick an evolve option
+def swing_input():
+    swing = False
+    swing_set = None
+
+    print('Should the generated rhythm be', colored('humanized', 'yellow') + '? (Default is No)')
+
+    while type(swing_set) is not bool:
+        swing_set = input(' => ')
+
+        # Parse the value to a bool and assert it is valid
+        if not swing_set:
+            swing_set = swing
+            print(colored('\u221A', 'green'), 'Using default setting for humanize')
+        elif swing_set == "yes":
+            swing_set = True
+        elif swing_set == "no":
+            swing_set = False
+        else:
+            swing_set = None
+            print(colored('\u00D7', 'red'), "Error: input is neither \"yes\" or \"no\". Try again.")
+
+    if swing_set is not swing:
+        swing = swing_set
+
+    return swing
+
+
 def do_train():
     print(colored('Initializing training...', 'cyan'))
 
@@ -185,8 +213,11 @@ def do_generate():
     # Ask the user to pick an evolve option
     evolve = evolve_input()
 
+    # Ask the user to pick a swing option
+    swing = swing_input()
+
     # Generate a rhythm with the user input and store it
-    generated = algorithm.gen(sig, division, length, series, evolve)
+    generated = algorithm.gen(sig, division, length, series, evolve, swing)
 
 
 def do_play():
@@ -198,7 +229,9 @@ def do_play():
 
 
 def do_export():
-    print('Wanna export?')
+    print(colored('Exporting to file...', 'cyan'))
+    render.rhythm_to_midi(generated, sig, 48)
+    print(colored('\u221A', 'green'), 'The rhythm has been exported. You can find it in the', colored('../exports', 'yellow'), 'folder.')
 
 
 def handle_input(command):
