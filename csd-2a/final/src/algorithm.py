@@ -11,7 +11,6 @@ def gen(signature, division, length, series="example", evolve=False, swing=False
         layer = pickle.load(open('../model/'+series+'/'+str(signature[0])+'-'+str(signature[1])+'/overview.pickle', 'rb'))
         average = {}
 
-    ppq = 48
     slices = division * signature[0] * length
     single_measure = division * signature[0]
 
