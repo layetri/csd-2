@@ -144,7 +144,12 @@ def init(rhythm):
 
             # Handle "help" command
             elif cmd == 'help':
-                print('Here are your playback commands:')
+                print('The following commands are available for you to use:')
+                print(colored('play', 'cyan'), '         Start playback.')
+                print(colored('stop', 'cyan'), '         Stop playback and return to the main program.')
+                print(colored('loop', 'cyan'), '         Toggle looping. Currently', str(loop))
+                print(colored('bpm', 'cyan'), '          Change the playback BPM. Expects the new BPM as its only argument.')
+                print(colored('interface', 'cyan'), '    Select the MIDI interface to use.')
 
             # Handle unknown command
             else:
