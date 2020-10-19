@@ -12,6 +12,7 @@ division = 16
 # Ask the user for a time signature
 def time_sig_input():
     global sig
+    sig = (4, 4)
     sig_set = None
 
     print('What', colored('time signature', 'yellow'), 'do you want to use? (Default is ' + str(sig[0]) + '/' + str(sig[1]) + ')')
@@ -54,6 +55,7 @@ def series_input(context):
 
         if not series_set:
             series_set = series
+            print(colored('\u221A', 'green'), 'Using default dataset')
 
         # Check if the series directory exists for the desired action
         if not os.path.isdir('../' + context + '/' + series_set + '/' + str(sig[0]) + '-' + str(sig[1])):
@@ -77,6 +79,7 @@ def division_input():
         division_set = input(' => ')
         if not division_set:
             division_set = division
+            print(colored('\u221A', 'green'), 'Using default subdivision')
         else:
             try:
                 # Parse the division to a number
@@ -107,6 +110,7 @@ def length_input():
         length_set = input(' => ')
         if not length_set:
             length_set = length
+            print(colored('\u221A', 'green'), 'Using default length')
         else:
             try:
                 # Parse the length to a number
@@ -134,6 +138,7 @@ def evolve_input():
         # Parse the value to a bool and assert it is valid
         if not evolve_set:
             evolve_set = evolve
+            print(colored('\u221A', 'green'), 'Using default setting for evolve')
         elif evolve_set == "yes":
             evolve_set = True
         elif evolve_set == "no":
