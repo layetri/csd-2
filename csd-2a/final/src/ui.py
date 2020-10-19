@@ -201,8 +201,8 @@ def do_generate():
     # Ask the user for a time signature
     time_sig_input()
 
-    # Ask the user for the division
-    division_input()
+    # Ask the user for the division (needs finetuning, disabled for now. Use are your own risk)
+    # division_input()
 
     # Ask the user for the length
     length = length_input()
@@ -210,8 +210,9 @@ def do_generate():
     # Ask the user to pick a dataset
     series = series_input('model')
 
-    # Ask the user to pick an evolve option
-    evolve = evolve_input()
+    # Ask the user to pick an evolve option (needs finetuning, disabled for now. Use at your own risk)
+    # evolve = evolve_input()
+    evolve = False
 
     # Ask the user to pick a swing option
     swing = swing_input()
