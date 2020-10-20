@@ -113,7 +113,6 @@ def init(rhythm):
                 proc.join()
 
                 play_state = False
-                print(proc)
 
             # Handle "bpm" command
             elif cmd.split(' ')[0] == 'bpm':
