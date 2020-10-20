@@ -12,11 +12,13 @@ NeuroBeat is a simple ML-based beat generation algorithm written in Python. The 
 ### Dependencies
 NeuroBeat depends on the following non-standard packages (installation via `pip3`):
 - `mido`
-- `termcolor`
 - `python-rtmidi`
+- `termcolor`
 
 ## Basic Usage
 To use the program, clone this repo first. Then, navigate to `/src` and run `python3 main.py`. `main.py` serves as an entry point for the application. Use `help` to list all available commands, `about` to show the about text and `exit` to close the program.
+
+On macOS, the `/utils/midibridge.maxpat` Max patch is available to route MIDI to the internal AU DLS synthesizer.
 
 ## Training Models
 To train a model, first make sure that there are source MIDI files available for the training algorithm to use. These files should be placed in `/train/{ LIBRARY }/{ TIME_SIGNATURE }`. The value of `{ LIBRARY }` is arbitrary. The time signature folder should be named according to the convention `{ UPPER }-{ LOWER }`.
