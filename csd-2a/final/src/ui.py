@@ -220,6 +220,10 @@ def do_generate():
     # Generate a rhythm with the user input and store it
     generated = algorithm.gen(sig, division, length, series, evolve, swing)
 
+    # Give the user visual feedback
+    print(colored('\u221A', 'green'), 'The rhythm has been generated. Use', colored('play', 'yellow'), 'to play it.')
+
+
 
 def do_play():
     try:
