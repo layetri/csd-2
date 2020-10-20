@@ -19,8 +19,11 @@ def set_bpm(value):
     global bpm, abs_interval
     print(colored('Setting BPM to ' + str(value), 'cyan'))
     if bpm is not value:
-        bpm = value
-        abs_interval = 60 / (bpm * ppq)
+        if 0 < value < 250:
+            bpm = value
+            abs_interval = 60 / (bpm * ppq)
+        else:
+            raise TypeError
 
 
 # Playhead thread
@@ -123,6 +126,8 @@ def init(rhythm):
                         set_bpm(int(arr[1]))
                     except ValueError:
                         print(colored('\u00D7', 'red'), "Error: could not parse argument to number. Try again.")
+                    except TypeError:
+                        print(colored('\u00D7', 'red'), "Error: invalid value. Try again with a number between 0 and 250.")
                 else:
                     print(colored('\u00D7', 'red'), 'BPM expects exactly 1 argument,', str(len(arr) - 1), 'given.')
 
