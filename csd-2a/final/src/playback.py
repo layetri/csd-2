@@ -108,9 +108,10 @@ def init(rhythm):
 
             # Handle "stop" command
             elif cmd == 'stop':
-                playing = False
-                proc.shutdown()
-                proc.join()
+                if proc.is_alive() or playing:
+                    playing = False
+                    proc.shutdown()
+                    proc.join()
 
                 play_state = False
 
