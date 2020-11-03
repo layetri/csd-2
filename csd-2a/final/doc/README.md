@@ -14,6 +14,7 @@ NeuroBeat depends on the following non-standard packages (installation via `pip3
 - `mido`
 - `python-rtmidi`
 - `termcolor`
+- `pygame`
 
 ## Basic Usage
 To use the program, clone this repo first. Then, navigate to `/src` and run `python3 main.py`. `main.py` serves as an entry point for the application. Use `help` to list all available commands, `about` to show the about text and `exit` to close the program.
@@ -37,6 +38,7 @@ After generating a rhythm, you can now play it back. To start the player, run th
 - `loop`: toggle looping (turned off by default)
 - `bpm { BPM }`: change the playback BPM
 - `interface`: select the MIDI interface to use
+- `backend`: select the backend that `mido` should use
 - `help`: show a list of available commands
 
 ## Exporting Rhythms

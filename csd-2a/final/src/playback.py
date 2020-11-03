@@ -1,15 +1,20 @@
 import threading
 import time
 import mido
+import pygame
 from termcolor import colored
 
 ppq = 48
 bpm = 120
 abs_interval = 60 / (bpm * ppq)
 
+playing = False
 loop = False
 proc = None
+proc_has_ended = False
+
 gm_output = None
+gm_backend = 'rtmidi'
 
 timeline = {}
 
@@ -37,10 +42,13 @@ class Playhead(threading.Thread):
         self.timekeeper = 0
         # Set a baseline timestamp
         self.prev_time = time.time()
+        # Set the mido backend
+        mido.set_backend('mido.backends.'+gm_backend)
         # Open MIDI output
         self.gm_out = mido.open_output(gm_output)
 
     def run(self):
+        global proc_has_ended, playing
         while not self.exit.is_set():
             # Store the current time
             # # (instead of calling time() twice, which would result in a slight execution time offset)
@@ -63,7 +71,12 @@ class Playhead(threading.Thread):
                 if self.timekeeper > max(timeline):
                     # ...and the loop flag has not been set,
                     if not loop:
-                        # ...stop the thread.
+                        # ...close the MIDI port,
+                        self.gm_out.close()
+                        # ...raise the flags,
+                        proc_has_ended = True
+                        playing = False
+                        # ...and stop the thread.
                         self.exit.set()
                     # Else, reset the timekeeper to 0 and loop.
                     else:
@@ -76,13 +89,15 @@ class Playhead(threading.Thread):
     def shutdown(self):
         # Close the MIDI port
         self.gm_out.close()
+        # Raise the flag
+        playing = False
         # Set the exit event
         self.exit.set()
 
 
 # Initialization function for playback mode
 def init(rhythm):
-    global proc, gm_output, timeline, loop
+    global proc, gm_output, gm_backend, timeline, loop, proc_has_ended, playing
 
     # If a rhythm is present
     if bool(rhythm):
@@ -90,9 +105,6 @@ def init(rhythm):
         timeline = rhythm
         play_state = True
         playing = False
-
-        # Set the mido backend
-        mido.set_backend('mido.backends.rtmidi')
 
         # Initialize the Playhead thread
         proc = Playhead()
@@ -106,8 +118,16 @@ def init(rhythm):
 
             # Handle "play" command
             if cmd == 'play':
-                playing = True
-                proc.start()
+                if playing and not proc_has_ended:
+                    print(colored('\u00D7', 'red'), "Cannot playback twice at the same time.")
+                else:
+                    if proc_has_ended:
+                        proc.shutdown()
+                        proc.join()
+                        proc = Playhead()
+                        proc_has_ended = False
+                    playing = True
+                    proc.start()
 
             # Handle "stop" command
             elif cmd == 'stop':
@@ -147,6 +167,17 @@ def init(rhythm):
                 else:
                     print(colored('\u00D7', 'red'), 'That interface does not exist.')
 
+            # Handle "backend" command
+            elif cmd == 'backend':
+                backends = ['rtmidi', 'pygame']
+                print('Available backends:', backends)
+                backend = input('=> Please specify the backend to use: ')
+
+                if backend in backends:
+                    gm_backend = backend
+                else:
+                    print(colored('\u00D7', 'red'), 'That backend does not exist.')
+
             # Handle "help" command
             elif cmd == 'help':
                 print('The following commands are available for you to use:')
@@ -155,6 +186,7 @@ def init(rhythm):
                 print(colored('loop', 'cyan'), '         Toggle looping. Currently', str(loop))
                 print(colored('bpm', 'cyan'), '          Change the playback BPM. Expects the new BPM as its only argument.')
                 print(colored('interface', 'cyan'), '    Select the MIDI interface to use.')
+                print(colored('backend', 'cyan'), '      Select the backend for mido to use.')
 
             # Handle unknown command
             else:
