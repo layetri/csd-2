@@ -1,3 +1,5 @@
+# ✨ Daniël Kamp's supersonic Makefile, oh yeah ✨
+
 CC=g++
 SRC_DIR=src
 OBJ_DIR=obj
@@ -12,7 +14,7 @@ synth: $(OBJECTS)
 obj/main.o: src/main.cpp
 	$(CC) -c -std=c++11 $< -o $@
 
-# Make all .cpp source files into .o files
+# Make all .cpp source files into .o files, like magic ✨
 obj/%.o: src/%.cpp src/%.h
 	$(CC) -c -std=c++11 $< -o $@
 
