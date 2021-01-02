@@ -38,3 +38,6 @@
 /instrument-class/instrument
 /classes/class-2/osctest
 /final/synth
+/.idea
+/final/plot.py
+/final/dump.csv
