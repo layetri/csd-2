@@ -3,11 +3,12 @@
 
 #include "osc.h"
 #include "sin.h"
+#include "sqr.h"
 
 float buffer[SAMPLERATE];
 
 int main() {
-  Sine sine(332);
+  Square sine(2);
 
   std::ofstream dump;
   dump.open ("dump.csv");
