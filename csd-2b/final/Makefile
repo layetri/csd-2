@@ -1,7 +1,7 @@
 # ✨ Daniël Kamp's supersonic Makefile, oh yeah ✨
 
 CC=g++
-CFLAGS = -I/usr/local/include -Wall -std=c++1z
+CFLAGS = -I/usr/local/include -Wall -std=c++14
 LDFLAGS= -ljack -lcurses
 
 SRC_DIR=src
@@ -18,11 +18,11 @@ synth: $(OBJECTS)
 
 # Separate rule for main.cpp since it doesn't have a header
 obj/main.o: src/main.cpp
-	$(CC) -c -std=c++11 $< -o $@
+	$(CC) -c $< $(CFLAGS) -o $@
 
 # Make all .cpp source files into .o files, like magic ✨
 obj/%.o: src/%.cpp src/%.h
-	$(CC) -c -std=c++11 $< $(CFLAGS) -o $@
+	$(CC) -c $< $(CFLAGS) -o $@
 
 # Install to system path
 install:
