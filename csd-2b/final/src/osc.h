@@ -1,11 +1,10 @@
 #pragma once
 
 #define TWO_PI (M_PI * 2)
-#define SAMPLERATE 44100
 
 class Oscillator {
   public:
-    Oscillator(float frequency);
+    Oscillator(float frequency, int samplerate);
     ~Oscillator();
 
     // Methods for Frequency
@@ -20,6 +19,14 @@ class Oscillator {
     float getPhase();
     void incrementPhase();
 
+    // Methods for Samplerate
+    double getSamplerate();
+    void setSamplerate(int samplerate);
+
+    // Methods to override
+    virtual float getSample();
+    virtual void next();
+
 
   protected:
     void tick();
@@ -27,9 +34,11 @@ class Oscillator {
 
     void calculatePhaseStep();
 
+    double samplerate;
+
     float frequency;
     float amplitude;
+    float detune;
     float phase;
     float phase_step;
-    int sample;
 };

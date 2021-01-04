@@ -1,7 +1,8 @@
 #include "sqr.h"
 #include <math.h>
+#include <iostream>
 
-Square::Square(float frequency) : Oscillator(frequency) {
+Square::Square(float frequency, int samplerate) : Oscillator(frequency, samplerate) {
 
 }
 
@@ -9,9 +10,13 @@ Square::~Square() {
 
 }
 
-float Square::next() {
+float Square::getSample() {
+  return sample;
+}
+
+void Square::next() {
   incrementPhase();
-  float val;
+  float val = 0.0;
   int harmonics = 10;
 
   for(int i = 1; i < harmonics; i++) {
@@ -19,5 +24,5 @@ float Square::next() {
     val += sin(TWO_PI * n * getPhase()) / n;
   }
 
-  return val;
+  sample = val;
 }

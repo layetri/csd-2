@@ -1,7 +1,7 @@
 #include "sin.h"
 #include <math.h>
 
-Sine::Sine(float frequency) : Oscillator(frequency) {
+Sine::Sine(float frequency, int samplerate) : Oscillator(frequency, samplerate) {
 
 }
 
@@ -9,7 +9,11 @@ Sine::~Sine() {
 
 }
 
-float Sine::next() {
+float Sine::getSample() {
+  return sample;
+}
+
+void Sine::next() {
   incrementPhase();
-  return sin(TWO_PI * getPhase());
+  sample = sin(TWO_PI * getPhase());
 }

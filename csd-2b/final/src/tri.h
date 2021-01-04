@@ -1,10 +1,10 @@
 #pragma once
 #include "osc.h"
 
-class Sine : public Oscillator {
+class Triangle : public Oscillator {
   public:
-    Sine(float frequency, int samplerate);
-    ~Sine();
+    Triangle(float frequency, int samplerate);
+    ~Triangle();
 
     float getSample() override;
     void next() override;

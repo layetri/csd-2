@@ -2,19 +2,16 @@
 #include <iostream>
 
 // Constructor
-Oscillator::Oscillator(float frequency) {
-  std::cout << "Booting oscillator" << std::endl;
+Oscillator::Oscillator(float frequency, int samplerate) {
   // Initialize variables
   setFrequency(frequency);
+  setSamplerate(samplerate);
   amplitude = 0.2;
   phase = 0;
-  sample = 0;
 }
 
 // Destructor
-Oscillator::~Oscillator() {
-  std::cout << "Cleaning up oscillator" << std::endl;
-}
+Oscillator::~Oscillator() {}
 
 // Buffer the waveform
 void Oscillator::buffer() {
@@ -42,10 +39,20 @@ void Oscillator::setAmplitude(float amplitude) {
   this->amplitude = amplitude;
 }
 
+// Samplerate getter
+double Oscillator::getSamplerate() {
+  return samplerate;
+}
+
+// Amplitude setter
+void Oscillator::setSamplerate(int samplerate) {
+  this->samplerate = samplerate;
+  calculatePhaseStep();
+}
+
 // Phase step calculator
 void Oscillator::calculatePhaseStep() {
-  phase_step = frequency / SAMPLERATE;
-  std::cout << std::to_string(phase_step) << std::endl;
+  phase_step = frequency / samplerate;
 }
 
 // Phase getter
@@ -53,8 +60,17 @@ float Oscillator::getPhase() {
   return phase;
 }
 
+// Phase increment
 void Oscillator::incrementPhase() {
   phase += phase_step;
-
   if(phase > 1.0) phase -= 1.0;
+
+//  std::cout << phase << std::endl << phase_step << std::endl;
 }
+
+// GetSample dummy
+float Oscillator::getSample() {
+  return 0.0;
+}
+// Next dummy
+void Oscillator::next() {}

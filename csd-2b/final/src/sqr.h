@@ -3,8 +3,12 @@
 
 class Square : public Oscillator {
   public:
-    Square(float frequency);
+    Square(float frequency, int samplerate);
     ~Square();
 
-    float next();
+    float getSample() override;
+    void next() override;
+
+  private:
+    float sample;
 };
