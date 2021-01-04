@@ -13,7 +13,8 @@
 #include "jack_module.h"
 
 // Include program headers
-#include "synth.h"
+#include "subsynth.h"
+#include "fmsynth.h"
 #include "melody.h"
 
 // Use std namespace instead of std-littering our code
@@ -67,8 +68,9 @@ int main(int argc, char* argv[]) {
   vector<Melody> melodies;
 
   // Initialize two synths
-  Synth voice1("square", samplerate);
-  Synth voice2("sine", samplerate);
+  SubSynth voice1(440.0, "square", samplerate);
+  //FMSynth voice2(440.0,1.1, samplerate);
+  SubSynth voice2(440.0, "sine", samplerate);
   voice1.play(60);
   voice2.play(67);
 
@@ -80,9 +82,7 @@ int main(int argc, char* argv[]) {
 
       for(unsigned int i = 0; i < nframes; i++) {
         outBuf[i] = ((voice1.getSample() + voice2.getSample()) / 2) * amplitude;
-        voice1.next();
-        voice2.next();
-//        outBuf[i] = 0.0;
+        outBuf[i] = 0.0;
       }
 
       return 0;
@@ -127,7 +127,7 @@ int main(int argc, char* argv[]) {
       }
         // Handle melody playback
       else if (command == "melody play") {
-        if (Melody::assure()) {
+        if (!melodies.empty()) {
           //thread mel(melody.play);
         } else {
           cout << "Whoops! There is no melody to play. Type " << color("melody generate", 36) << " to generate one."
