@@ -1,8 +1,9 @@
-#include "fmsynth.h"
+#include "h/fmsynth.h"
 
 // Constructor & Destructor
-FMSynth::FMSynth(float frequency, float ratio, int samplerate) {
+FMSynth::FMSynth(float frequency, float ratio, int samplerate) : Synth() {
   setFrequency(frequency);
+  setPhaseStep(frequency / samplerate);
   setRatio(ratio);
   setModIndex(1.0);
   voice_pointer = new Sine(frequency, samplerate);
@@ -26,6 +27,14 @@ void FMSynth::setFrequency(float frequency) {
 float FMSynth::getFrequency() {
   return frequency;
 }
+// Phase step setter
+void FMSynth::setPhaseStep(float phase_step) {
+  this->phase_step = phase_step;
+}
+// Phase step getter
+float FMSynth::getPhaseStep() {
+  return phase_step;
+}
 // Mod index setter
 void FMSynth::setModIndex(float mod_index) {
   this->mod_index = mod_index;
@@ -42,12 +51,16 @@ void FMSynth::next() {
 
 // Set note properties
 void FMSynth::play(int note) {
-  setFrequency(Synth::mtof(note));
+  float freq = Synth::mtof(note);
+  setFrequency(freq);
+  voice_pointer->setFrequency(freq);
+  mod_pointer->setFrequency(freq * ratio);
 }
 
 // Calculate sample via modulation
 float FMSynth::getSample() {
-  float mod = mod_pointer->getSample() * getModIndex();
-  voice_pointer->setFrequency(frequency + mod);
-  return voice_pointer->getSample();
+  float mod = mod_pointer->getSample() * getModIndex() * 0.01;
+  voice_pointer->setPhaseStep(phase_step + mod);
+  voice_pointer->next();
+  return voice_pointer->getSample() * amplitude;
 }

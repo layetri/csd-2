@@ -1,4 +1,4 @@
-#include "tri.h"
+#include "h/tri.h"
 
 Triangle::Triangle(float frequency, int samplerate) : Oscillator(frequency, samplerate) {
 
@@ -13,5 +13,6 @@ float Triangle::getSample() {
 }
 
 void Triangle::next() {
-
+  incrementPhase();
+  sample = asin(sin(TWO_PI * getPhase()));
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #define TWO_PI (M_PI * 2)
+#include <math.h>
 
 class Oscillator {
   public:
@@ -18,6 +19,7 @@ class Oscillator {
     // Methods for Phase
     float getPhase();
     void incrementPhase();
+    void setPhaseStep(float phase_step);
 
     // Methods for Samplerate
     double getSamplerate();
@@ -29,15 +31,12 @@ class Oscillator {
 
 
   protected:
-    void buffer();
-
     void calculatePhaseStep();
 
-    double samplerate;
+    int samplerate;
 
     float frequency;
     float amplitude;
-    float detune;
     float phase;
     float phase_step;
 };
