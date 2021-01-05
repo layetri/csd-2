@@ -3,14 +3,16 @@
 //
 
 #pragma once
+#include "synth.h"
 #include "osc.h"
 #include "sqr.h"
 #include "sin.h"
 #include "tri.h"
 
 #include <string>
+#include <math.h>
 
-class SubSynth {
+class SubSynth : public Synth {
   public:
     SubSynth(float frequency, std::string waveform, int samplerate);
     ~SubSynth();
@@ -19,7 +21,6 @@ class SubSynth {
     void next();
     float getSample();
     void play(int note);
-
   protected:
     Oscillator *voice_pointer = nullptr;
     int samplerate;

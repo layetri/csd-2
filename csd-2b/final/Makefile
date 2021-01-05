@@ -2,7 +2,7 @@
 
 CC=g++
 CFLAGS = -I/usr/local/include -Wall -std=c++14
-LDFLAGS= -ljack -lcurses
+LDFLAGS= -ljack
 
 SRC_DIR=src
 OBJ_DIR=obj
@@ -18,10 +18,11 @@ synth: $(OBJECTS)
 
 # Separate rule for main.cpp since it doesn't have a header
 obj/main.o: src/main.cpp
+	mkdir -p $(OBJ_DIR)
 	$(CC) -c $< $(CFLAGS) -o $@
 
 # Make all .cpp source files into .o files, like magic ✨
-obj/%.o: src/%.cpp src/%.h
+obj/%.o: src/%.cpp src/h/%.h
 	$(CC) -c $< $(CFLAGS) -o $@
 
 # Install to system path

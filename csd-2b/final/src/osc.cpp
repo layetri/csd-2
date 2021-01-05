@@ -1,22 +1,18 @@
-#include "osc.h"
-#include <iostream>
+#include "h/osc.h"
 
 // Constructor
 Oscillator::Oscillator(float frequency, int samplerate) {
   // Initialize variables
-  setFrequency(frequency);
-  setSamplerate(samplerate);
+  this->frequency = frequency;
+  this->samplerate = samplerate;
   amplitude = 0.2;
   phase = 0;
+
+  calculatePhaseStep();
 }
 
 // Destructor
 Oscillator::~Oscillator() {}
-
-// Buffer the waveform
-void Oscillator::buffer() {
-
-}
 
 // Frequency getter
 float Oscillator::getFrequency() {
@@ -55,6 +51,10 @@ void Oscillator::calculatePhaseStep() {
   phase_step = frequency / samplerate;
 }
 
+void Oscillator::setPhaseStep(float phase_step) {
+  this->phase_step = phase_step;
+}
+
 // Phase getter
 float Oscillator::getPhase() {
   return phase;
@@ -64,8 +64,6 @@ float Oscillator::getPhase() {
 void Oscillator::incrementPhase() {
   phase += phase_step;
   if(phase > 1.0) phase -= 1.0;
-
-//  std::cout << phase << std::endl << phase_step << std::endl;
 }
 
 // GetSample dummy

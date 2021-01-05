@@ -3,9 +3,11 @@
 //
 
 #pragma once
+#include <math.h>
+
 #include "synth.h"
 
-class FMSynth {
+class FMSynth : public Synth {
   public:
     FMSynth(float frequency, float ratio, int samplerate);
     ~FMSynth();
@@ -21,6 +23,10 @@ class FMSynth {
     void setModIndex(float mod_index);
     float getModIndex();
 
+    // Phase step functions
+    void setPhaseStep(float phase_step);
+    float getPhaseStep();
+
     // Transport functions
     void next();
     float getSample();
@@ -29,7 +35,9 @@ class FMSynth {
   protected:
     Oscillator *voice_pointer = nullptr;
     Oscillator *mod_pointer = nullptr;
+
     float ratio;
     float mod_index;
     float frequency;
+    float phase_step;
 };

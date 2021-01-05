@@ -4,6 +4,7 @@
 
 #pragma once
 #include <string>
+#include <math.h>
 
 #include "osc.h"
 #include "sqr.h"
@@ -16,9 +17,9 @@ class Synth {
     ~Synth();
 
     static float mtof(int note);
+    void setAmplitude(float amplitude);
 
   protected:
-    // Envelope envelope;
-
     int samplerate;
+    float amplitude;
 };

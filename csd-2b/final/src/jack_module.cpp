@@ -10,7 +10,7 @@
 #include <unistd.h> // usleep
 //TEMP - remove
 #include "math.h"
-#include "jack_module.h"
+#include "h/jack_module.h"
 
 // prototypes & globals
 static void jack_shutdown(void *);

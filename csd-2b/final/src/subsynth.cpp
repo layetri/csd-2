@@ -2,10 +2,10 @@
 // Created by Daniël Kamp on 04/01/2021.
 //
 
-#include "subsynth.h"
-#include <iostream>
+#include "h/subsynth.h"
+#include <stdexcept>
 
-SubSynth::SubSynth(float frequency, std::string waveform, int samplerate) {
+SubSynth::SubSynth(float frequency, std::string waveform, int samplerate) : Synth() {
   this->samplerate = samplerate;
 
   if(waveform == "square") {
@@ -14,19 +14,17 @@ SubSynth::SubSynth(float frequency, std::string waveform, int samplerate) {
     voice_pointer = new Sine(frequency, samplerate);
   } else if(waveform == "tri") {
     voice_pointer = new Triangle(frequency, samplerate);
+  } else {
+    throw std::invalid_argument("This is not a waveform!");
   }
 }
 
 SubSynth::~SubSynth() {
-  std::cout << "Deleting SubSynth voice\n";
   delete voice_pointer;
 }
 
 float SubSynth::getSample() {
-  std::cout << "Subsynth called at " << voice_pointer << std::endl;
-  std::cout << voice_pointer->getSample();
-  // THE PROBLEM STARTS HERE
-  return voice_pointer->getSample();
+  return voice_pointer->getSample() * amplitude;
 }
 
 void SubSynth::next() {
@@ -34,6 +32,6 @@ void SubSynth::next() {
 }
 
 void SubSynth::play(int note) {
-  //float frequency = Synth::mtof(note);
-  //voice_pointer->setFrequency(frequency);
+  float freq = Synth::mtof(note);
+  voice_pointer->setFrequency(freq);
 }
