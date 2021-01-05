@@ -12,17 +12,13 @@
 
 class Synth {
   public:
-    Synth(std::string voice_type, int samplerate);
+    Synth();
     ~Synth();
 
-    void play(int note);
-    void next();
-    float getSample();
+    static float mtof(int note);
 
   protected:
-    __unused Oscillator *voice_pointer = nullptr;
     // Envelope envelope;
 
     int samplerate;
-    float mtof(int note);
 };

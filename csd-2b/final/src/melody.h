@@ -9,11 +9,11 @@ class Melody {
     explicit Melody(int length);
     ~Melody();
 
-    static void play();
-    static bool assure();
-    static int instances;
+    void play();
 
     int melody;
   private:
+    int length;
+
     int generate(int length);
 };

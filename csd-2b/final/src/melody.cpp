@@ -7,13 +7,11 @@
 #include <iostream>
 
 Melody::Melody(int length) {
-  instances++;
+  this->length = length;
   melody = generate(length);
 }
 
-Melody::~Melody() {
-  instances--;
-}
+Melody::~Melody() {}
 
 int Melody::generate(int length) {
   int mel[length];
@@ -23,15 +21,15 @@ int Melody::generate(int length) {
 
   for(int i = 0; i < length; i++) {
     mel[i] = choices[rand() % 12] + root;
+    std::cout << mel[i] << " ";
   }
+  std::cout << std::endl;
 
   return *melody_pointer;
 }
 
 void Melody::play() {
-
-}
-
-bool Melody::assure() {
-  return instances > 0;
+//  for(int i = 0; i < length; i++) {
+//    melody[i]
+//  }
 }
