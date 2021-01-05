@@ -5,7 +5,7 @@
 class Oscillator {
   public:
     Oscillator(float frequency, int samplerate);
-    virtual ~Oscillator();
+    ~Oscillator();
 
     // Methods for Frequency
     float getFrequency();
@@ -29,6 +29,7 @@ class Oscillator {
 
 
   protected:
+    void tick();
     void buffer();
 
     void calculatePhaseStep();

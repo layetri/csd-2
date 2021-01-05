@@ -1,10 +1,13 @@
 #include "sin.h"
 #include <math.h>
-#include <iostream>
 
-Sine::Sine(float frequency, int samplerate) : Oscillator(frequency, samplerate) {}
+Sine::Sine(float frequency, int samplerate) : Oscillator(frequency, samplerate) {
 
-Sine::~Sine() {}
+}
+
+Sine::~Sine() {
+
+}
 
 float Sine::getSample() {
   return sample;
