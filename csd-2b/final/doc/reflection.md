@@ -1,0 +1,2 @@
+## Zelfreflectie CSD2b
+Ik vond het uiteindelijk een leuk project om aan te werken, maar heb wel aardig wat moeite gehad om eraan te beginnen. Dit had te maken met drukte bij andere blokken en het feit dat ik wat tijd nodig had om te wennen aan C++. Hierdoor heb ik veel werk op het laatste moment moeten doen, waardoor het eindresultaat te wensen over laat. Ik heb in totaal ongeveer 35 uur in dit project gestoken, inclusief ontwerp.
